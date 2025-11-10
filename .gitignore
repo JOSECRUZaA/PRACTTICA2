@@ -1,0 +1,17 @@
+# Sistema / editor
+.DS_Store
+.vscode/
+Thumbs.db
+
+# Node / dependencias
+node_modules/
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# Entornos
+.env
