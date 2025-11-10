@@ -8,10 +8,132 @@
   }
 
   function evaluarSeguro(s) {
-    if (!/^[0-9+\-*/. ]*$/.test(s)) throw new Error('Caracteres inválidos');
-    if (/[+\-*/. ]$/.test(s)) s = s.slice(0, -1);
+    // validar caracteres permitidos (números, operadores, paréntesis, punto y espacios)
+    if (!/^[0-9+\-*/().\s]*$/.test(s)) throw new Error('Caracteres inválidos');
     s = s.replace(/\s+/g, '');
-    return Function('return (' + s + ')')();
+    // si termina en operador binario, quitarlo
+    if (/[+\-*/]$/.test(s)) s = s.slice(0, -1);
+
+    // Tokenizar: números (con punto), operadores y paréntesis
+    function tokenize(str) {
+      const tokens = [];
+      let i = 0;
+      while (i < str.length) {
+        const ch = str[i];
+        if (/[0-9.]/.test(ch)) {
+          let num = ch;
+          i++;
+          while (i < str.length && /[0-9.]/.test(str[i])) { num += str[i++]; }
+          if ((num.match(/\./g) || []).length > 1) throw new Error('Número con varios puntos');
+          tokens.push({ type: 'number', value: parseFloat(num) });
+          continue;
+        }
+        if (ch === '+' || ch === '-' || ch === '*' || ch === '/') {
+          tokens.push({ type: 'op', value: ch });
+          i++;
+          continue;
+        }
+        if (ch === '(' || ch === ')') {
+          tokens.push({ type: 'paren', value: ch });
+          i++;
+          continue;
+        }
+        // should not reach here because of validation above
+        throw new Error('Token inválido: ' + ch);
+      }
+      return tokens;
+    }
+
+    // Shunting-yard: convertir a RPN
+    function shuntingYard(tokens) {
+      const out = [];
+      const ops = [];
+
+      const precedence = { '+': 1, '-': 1, '*': 2, '/': 2, 'u-': 3 };
+      const rightAssoc = { 'u-': true };
+
+      for (let i = 0; i < tokens.length; i++) {
+        const t = tokens[i];
+        if (t.type === 'number') {
+          out.push(t);
+          continue;
+        }
+        if (t.type === 'op') {
+          // detectar signo unario (si es '-' y es inicio o viene después de otro operador o '(')
+          let op = t.value;
+          const prev = tokens[i - 1];
+          if (op === '-' && (!prev || (prev.type === 'op') || (prev.type === 'paren' && prev.value === '('))) {
+            op = 'u-';
+          }
+          while (ops.length) {
+            const top = ops[ops.length - 1];
+            if (top.type !== 'op') break;
+            const topOp = top.value;
+            const p1 = precedence[op] || 0;
+            const p2 = precedence[topOp] || 0;
+            if ((rightAssoc[op] && p1 < p2) || (!rightAssoc[op] && p1 <= p2)) {
+              out.push(ops.pop());
+            } else break;
+          }
+          ops.push({ type: 'op', value: op });
+          continue;
+        }
+        if (t.type === 'paren') {
+          if (t.value === '(') { ops.push(t); continue; }
+          // t == ')'
+          let found = false;
+          while (ops.length) {
+            const top = ops.pop();
+            if (top.type === 'paren' && top.value === '(') { found = true; break; }
+            out.push(top);
+          }
+          if (!found) throw new Error('Paréntesis desbalanceados');
+        }
+      }
+
+      while (ops.length) {
+        const top = ops.pop();
+        if (top.type === 'paren') throw new Error('Paréntesis desbalanceados');
+        out.push(top);
+      }
+      return out;
+    }
+
+    // Evaluar RPN
+    function evalRPN(rpn) {
+      const stack = [];
+      for (const tk of rpn) {
+        if (tk.type === 'number') { stack.push(tk.value); continue; }
+        if (tk.type === 'op') {
+          if (tk.value === 'u-') {
+            if (stack.length < 1) throw new Error('Expresión inválida');
+            const a = stack.pop();
+            stack.push(-a);
+            continue;
+          }
+          if (stack.length < 2) throw new Error('Expresión inválida');
+          const b = stack.pop();
+          const a = stack.pop();
+          let res;
+          switch (tk.value) {
+            case '+': res = a + b; break;
+            case '-': res = a - b; break;
+            case '*': res = a * b; break;
+            case '/':
+              if (b === 0) throw new Error('División por cero');
+              res = a / b; break;
+            default: throw new Error('Operador desconocido');
+          }
+          stack.push(res);
+        }
+      }
+      if (stack.length !== 1) throw new Error('Expresión inválida');
+      return stack[0];
+    }
+
+    const tokens = tokenize(s);
+    const rpn = shuntingYard(tokens);
+    return evalRPN(rpn);
   }
 
   teclas.addEventListener('click', e => {
