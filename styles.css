@@ -1,0 +1,24 @@
+:root{
+  --fondo:#192a3e; /* color de fondo */
+  --borde:#008c8c; /* borde teal */
+  --panel:#192a3e; /* panel interior */
+  --boton:#008c8c;
+  --acento:#008c8c;
+  --texto:#dbeef0;
+}
+*{box-sizing:border-box;font-family: 'Segoe UI', Roboto, Arial, sans-serif}
+html,body{height:100%}
+body{margin:0;background:var(--fondo);display:flex;align-items:center;justify-content:center}
+.calc-title{color:var(--acento);text-align:center;margin-bottom:12px;font-weight:600}
+.page{width:100%;max-width:380px;padding:20px}
+.calculator{background:transparent;border-radius:10px;padding:14px;border:4px solid var(--borde);box-shadow:none}
+.display{height:78px;background:rgba(0,0,0,0.06);border-radius:8px;border:3px solid var(--borde);color:var(--texto);padding:14px;font-size:20px;display:flex;align-items:flex-end;justify-content:flex-end;overflow:hidden;white-space:nowrap;font-weight:600}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px;grid-auto-rows:68px}
+.btn{background:transparent;border-radius:10px;padding:10px 0;border:3px solid var(--borde);color:#ffffff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn:active{transform:translateY(1px)}
+.btn.op{color:#ffffff}
+.btn.action{background:rgba(11,43,52,0.12)}
+.zero{grid-column:span 2}
+.equals{grid-row:4 / span 2;grid-column:4;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--borde),#0ea89a);border:4px solid var(--borde);font-weight:700;font-size:22px;border-radius:12px;box-shadow:0 6px 0 rgba(0,0,0,0.35), inset 0 -3px rgba(255,255,255,0.06);color:#ffffff}
+/* responsive */
+@media (min-width:480px){.page{max-width:320px}}

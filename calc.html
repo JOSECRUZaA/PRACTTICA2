@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculadora</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <h1 class="calc-title">Calculadora - JOSE CRUZ ALCON</h1>
+      <section class="calculator">
+        <div class="display" id="display" aria-live="polite">0</div>
+
+        <div class="keys">
+          <button class="btn action" data-action="clear">C</button>
+          <button class="btn action" data-action="back">&lt;</button>
+          <button class="btn action" data-value="*">*</button>
+          <button class="btn op" data-value="/">/</button>
+
+          <button class="btn" data-value="7">7</button>
+          <button class="btn" data-value="8">8</button>
+          <button class="btn" data-value="9">9</button>
+          <button class="btn op" data-value="-">-</button>
+
+          <button class="btn" data-value="4">4</button>
+          <button class="btn" data-value="5">5</button>
+          <button class="btn" data-value="6">6</button>
+          <button class="btn op" data-value="+">+</button>
+
+          <button class="btn" data-value="1">1</button>
+          <button class="btn" data-value="2">2</button>
+          <button class="btn" data-value="3">3</button>
+
+          <button class="btn zero" data-value="0">0</button>
+          <button class="btn" data-value=".">.</button>
+          <button class="btn equals" data-action="equals">=</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
